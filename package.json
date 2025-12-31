@@ -1,31 +1,27 @@
 {
   "name": "care-xyz",
   "version": "1.0.0",
-  "description": "Baby Sitting & Elderly Care Service Platform - Developed by Redwan",
-  "author": "Redwan Shahriar Shubho",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.562.0",
     "mongoose": "^9.0.2",
     "next": "^16.1.1",
     "nodemailer": "^7.0.12",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "tailwindcss": "^4.1.18",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.23",
-    "eslint": "^9",
-    "eslint-config-next": "^16.1.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18"
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.1"
   }
 }
