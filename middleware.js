@@ -1,27 +1,9 @@
-import { NextResponse } from 'next/server'
-import { verifyAuth } from '@/lib/auth'
+import { NextResponse } from 'next/server';
 
-export async function middleware(req) {
-  const protectedRoutes = ['/booking', '/my-bookings']
-  const isProtected = protectedRoutes.some(path => req.nextUrl.pathname.startsWith(path))
-  const token = req.cookies.get('token')?.value
-
-  if (isProtected && !token) {
-    const url = new URL('/login', req.url)
-    url.searchParams.set('redirect', req.nextUrl.pathname)
-    return NextResponse.redirect(url)
-  }
-
-  if (token && isProtected) {
-    const user = await verifyAuth(token)
-    if (!user) {
-      const url = new URL('/login', req.url)
-      url.searchParams.set('redirect', req.nextUrl.pathname)
-      return NextResponse.redirect(url)
-    }
-  }
-
-  return NextResponse.next()
+export async function proxy(request) {
+  // Placeholder for auth: Later, add NextAuth token check to protect /booking and /my-bookings
+  // e.g., if (!token && request.nextUrl.pathname.startsWith('/booking')) return NextResponse.redirect('/login');
+  return NextResponse.next();
 }
 
-export const config = { matcher: ['/booking/:path*', '/my-bookings/:path*'] }
+export const config = { matcher: ['/booking/:path*', '/my-bookings'] };

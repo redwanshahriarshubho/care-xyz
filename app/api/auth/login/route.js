@@ -1,27 +1,69 @@
 import bcrypt from 'bcryptjs';
-import connectDB from '@/lib/mongodb';
+import { connectDB } from '@/lib/mongodb';
 import User from '@/models/User';
 import { generateToken } from '@/lib/auth';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
-
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
-
+export async function POST(req) {
   try {
     await connectDB();
+    
+    const { email, password } = await req.json();
+    
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email and password required' },
+        { status: 400 }
+      );
+    }
+
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
 
     const token = generateToken({ id: user._id, email: user.email });
-    res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Path=/; Max-Age=604800`);
-    res.status(200).json({ message: 'Logged in successfully', user: { name: user.name, email: user.email } });
+    
+    const response = NextResponse.json(
+      { 
+        message: 'Logged in successfully',
+        user: { 
+          id: user._id,
+          name: user.name,
+          email: user.email 
+        },
+        token
+      },
+      { status: 200 }
+    );
+
+    // Set cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 604800, // 7 days
+      path: '/'
+    });
+
+    return response;
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', err);
+    return NextResponse.json(
+      { error: 'Server error' },
+      { status: 500 }
+    );
   }
 }
