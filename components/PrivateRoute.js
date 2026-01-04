@@ -11,7 +11,10 @@ export default function PrivateRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/user')
+        const res = await fetch('/api/user', {
+          credentials: 'include'
+        })
+        
         if (res.ok) {
           setIsLoggedIn(true)
         } else {
@@ -30,8 +33,8 @@ export default function PrivateRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        Checking authentication...
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Checking authentication...</div>
       </div>
     )
   }
